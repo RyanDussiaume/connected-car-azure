@@ -80,7 +80,7 @@
         },
         "storageAccountName": "[toLower(uniqueString(resourceGroup().id) )]",
         "containerName": "[concat('hivemq-cluster-container-', uniqueString( resourceGroup().id, deployment().name ))]",
-        "setupScriptLink": "https://raw.githubusercontent.com/hivemq/hivemq-azure-cluster-discovery-extension/master/arm-quickstart-templates/hivemq-vm-cluster/scripts/hivemq_node_setup.sh"
+        "setupScriptLink": "https://raw.githubusercontent.com/RyanDussiaume/connected-car-azure/main/scripts/hivemq_node_setup.sh"
     },
     "resources": [
 
