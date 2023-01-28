@@ -51,6 +51,7 @@
         }
     },
     "variables": {
+        "databaseDNSZoneName": "ese-dns-zone",
         "imagePublisher": "Canonical",
         "imageOffer": "UbuntuServer",
         "ubuntuOSVersion": "18.04-LTS",
@@ -61,6 +62,8 @@
         "addressPrefix": "10.0.0.0/16",
         "subnetName": "hivemq-cluster-subnet",
         "subnetPrefix": "10.0.0.0/24",
+        "databaseSubnetName": "ese-database-subnet",
+        "databaseSubnetPrefix": "10.0.1.0/24",
         "virtualNetworkName": "hivemq-cluster-vnet",
         "backendPoolName": "hivemq-node",
         "frontendName": "LoadBalancerFrontEnd",
@@ -84,6 +87,22 @@
     },
     "resources": [
 
+
+        {
+            "type": "Microsoft.Network/privateDnsZones",
+            "apiVersion": "2018-09-01",
+            "name": "[variables('databaseDNSZoneName')]",
+            "location": "global",
+            "properties": {
+                "maxNumberOfRecordSets": 25000,
+                "maxNumberOfVirtualNetworkLinks": 1000,
+                "maxNumberOfVirtualNetworkLinksWithRegistration": 100,
+                "numberOfRecordSets": 2,
+                "numberOfVirtualNetworkLinks": 1,
+                "numberOfVirtualNetworkLinksWithRegistration": 0,
+                "provisioningState": "Succeeded"
+            }
+        },
 
         {
             "type": "Microsoft.Storage/storageAccounts",
@@ -150,6 +169,12 @@
                         "name": "[variables('subnetName')]",
                         "properties": {
                             "addressPrefix": "[variables('subnetPrefix')]"
+                        }
+                    }
+                    {
+                        "name": "[variables('databaseSubnetName')]",
+                        "properties": {
+                            "addressPrefix": "[variables('databaseSubnetPrefix')]"
                         }
                     }
                 ]
@@ -374,7 +399,6 @@
             }
         },
 
-
         {
             "type": "Microsoft.Compute/availabilitySets",
             "apiVersion": "2019-03-01",
@@ -386,6 +410,47 @@
             "properties": {
                 "platformUpdateDomainCount": 2,
                 "platformFaultDomainCount": 2
+            }
+        },
+
+        {
+            "type": "Microsoft.DBforPostgreSQL/flexibleServers",
+            "apiVersion": "2022-01-20-preview",
+            "name": "[parameters('flexibleServers_ese_database_name')]",
+            "location": "East US",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('databaseSubnetName'))]",
+                "[resourceId('Microsoft.Network/privateDnsZones', variables('databaseDNSZoneName'))]"
+            ],
+            "sku": {
+                "name": "Standard_B1ms",
+                "tier": "Burstable"
+            },
+            "properties": {
+                "version": "14",
+                "administratorLogin": "ryan",
+                "administratorLoginPassword": "EpK@YAFFiCXjm9k*tR6@i-gR",
+                "availabilityZone": "2",
+                "storage": {
+                    "storageSizeGB": 32
+                },
+                "backup": {
+                    "backupRetentionDays": 7,
+                    "geoRedundantBackup": "Disabled"
+                },
+                "network": {
+                    "delegatedSubnetResourceId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('databaseSubnetName'))]",
+                    "privateDnsZoneArmResourceId": "[resourceId('Microsoft.Network/privateDnsZones', variables('databaseDNSZoneName'))]"
+                },
+                "highAvailability": {
+                    "mode": "Disabled"
+                },
+                "maintenanceWindow": {
+                    "customWindow": "Disabled",
+                    "dayOfWeek": 0,
+                    "startHour": 0,
+                    "startMinute": 0
+                }
             }
         }
     ]

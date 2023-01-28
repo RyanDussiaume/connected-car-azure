@@ -7,6 +7,8 @@ HIVEMQ_DOWNLOAD_LINK="https://www.hivemq.com/releases/hivemq-${HIVEMQ_VERSION}.z
 
 EXTENSION_DOWNLOAD_LINK="https://github.com/hivemq/hivemq-azure-cluster-discovery-extension/releases/download/1.1.0/hivemq-azure-cluster-discovery-extension-1.1.0.zip"
 
+ESE_EXTENSION_PATH="/opt/hivemq/extensions/hivemq-enterprise-security-extension"
+
 sudo apt-get update -y
 sudo apt-get install -y openjdk-11-jdk
 sudo apt-get -y install unzip
