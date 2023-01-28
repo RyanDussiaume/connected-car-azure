@@ -208,35 +208,41 @@
                         "properties": {
                             "addressPrefix": "[variables('subnetPrefix')]"
                         }
-                    },
-                    {
-                        "name": "[variables('databaseSubnetName')]",
-                        "properties": {
-                            "addressPrefix": "[variables('databaseSubnetPrefix')]",
-                            "serviceEndpoints": [
-                                {
-                                    "service": "Microsoft.Storage",
-                                    "locations": [
-                                        "eastus",
-                                        "westus"
-                                    ]
-                                }
-                            ],
-                            "delegations": [
-                                {
-                                    "name": "dlg-Microsoft.DBforPostgreSQL-flexibleServers",
-                                    "id": "[concat(resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('databaseSubnetName')), '/delegations/dlg-Microsoft.DBforPostgreSQL-flexibleServers')]",
-                                    "properties": {
-                                        "serviceName": "Microsoft.DBforPostgreSQL/flexibleServers"
-                                    },
-                                    "type": "Microsoft.Network/virtualNetworks/subnets/delegations"
-                                }
-                            ],
-                            "privateEndpointNetworkPolicies": "Disabled",
-                            "privateLinkServiceNetworkPolicies": "Enabled"
-                        }
                     }
                 ]
+            }
+        },
+
+        {
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "apiVersion": "2022-05-01",
+            "name": "[concat(variables('virtualNetworkName'), '/', variables('databaseSubnetName'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]"
+            ],
+            "properties": {
+                "addressPrefix": "[variables('databaseSubnetPrefix')]",
+                "serviceEndpoints": [
+                    {
+                        "service": "Microsoft.Storage",
+                        "locations": [
+                            "eastus",
+                            "westus"
+                        ]
+                    }
+                ],
+                "delegations": [
+                    {
+                        "name": "dlg-Microsoft.DBforPostgreSQL-flexibleServers",
+                        "id": "[concat(resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('databaseSubnetName')), '/delegations/dlg-Microsoft.DBforPostgreSQL-flexibleServers')]",
+                        "properties": {
+                            "serviceName": "Microsoft.DBforPostgreSQL/flexibleServers"
+                        },
+                        "type": "Microsoft.Network/virtualNetworks/subnets/delegations"
+                    }
+                ],
+                "privateEndpointNetworkPolicies": "Disabled",
+                "privateLinkServiceNetworkPolicies": "Enabled"
             }
         },
 
