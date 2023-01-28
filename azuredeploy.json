@@ -486,7 +486,7 @@
             "dependsOn": [
                 "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('databaseSubnetName'))]",
                 "[resourceId('Microsoft.Network/privateDnsZones', variables('databaseDNSZoneName'))]",
-                "[resourceId('Microsoft.Network/privateDnsZones/virtualNetworkLinks', concat(variables('databaseDNSZoneName'), '/ey5z4ucrdz2a2'))]"
+                "[resourceId('Microsoft.Network/privateDnsZones/virtualNetworkLinks', variables('databaseDNSZoneName'), 'ey5z4ucrdz2a2')]"
             ],
             "sku": {
                 "name": "Standard_B1ms",
