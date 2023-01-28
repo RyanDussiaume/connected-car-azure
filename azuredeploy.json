@@ -62,6 +62,7 @@
         "addressPrefix": "10.0.0.0/16",
         "subnetName": "hivemq-cluster-subnet",
         "subnetPrefix": "10.0.0.0/24",
+        "databaseName": "ese-database",
         "databaseSubnetName": "ese-database-subnet",
         "databaseSubnetPrefix": "10.0.1.0/24",
         "virtualNetworkName": "hivemq-cluster-vnet",
@@ -416,7 +417,7 @@
         {
             "type": "Microsoft.DBforPostgreSQL/flexibleServers",
             "apiVersion": "2022-01-20-preview",
-            "name": "[parameters('flexibleServers_ese_database_name')]",
+            "name": "[variables('databaseName')]",
             "location": "East US",
             "dependsOn": [
                 "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('databaseSubnetName'))]",
