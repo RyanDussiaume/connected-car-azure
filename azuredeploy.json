@@ -62,7 +62,7 @@
         "addressPrefix": "10.0.0.0/16",
         "subnetName": "hivemq-cluster-subnet",
         "subnetPrefix": "10.0.0.0/24",
-        "databaseName": "ese-database-test",
+        "databaseName": "[concat('ese-database-', toLower(uniqueString(resourceGroup().id)) )]",
         "databaseSubnetName": "ese-database-subnet",
         "databaseSubnetPrefix": "10.0.1.0/24",
         "virtualNetworkName": "hivemq-cluster-vnet",
