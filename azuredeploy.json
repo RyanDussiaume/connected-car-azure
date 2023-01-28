@@ -412,47 +412,7 @@
                 "platformUpdateDomainCount": 2,
                 "platformFaultDomainCount": 2
             }
-        },
-
-        {
-            "type": "Microsoft.DBforPostgreSQL/flexibleServers",
-            "apiVersion": "2022-01-20-preview",
-            "name": "[variables('databaseName')]",
-            "location": "East US",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('databaseSubnetName'))]",
-                "[resourceId('Microsoft.Network/privateDnsZones', variables('databaseDNSZoneName'))]"
-            ],
-            "sku": {
-                "name": "Standard_B1ms",
-                "tier": "Burstable"
-            },
-            "properties": {
-                "version": "14",
-                "administratorLogin": "ryan",
-                "administratorLoginPassword": "EpK@YAFFiCXjm9k*tR6@i-gR",
-                "availabilityZone": "2",
-                "storage": {
-                    "storageSizeGB": 32
-                },
-                "backup": {
-                    "backupRetentionDays": 7,
-                    "geoRedundantBackup": "Disabled"
-                },
-                "network": {
-                    "delegatedSubnetResourceId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('databaseSubnetName'))]",
-                    "privateDnsZoneArmResourceId": "[resourceId('Microsoft.Network/privateDnsZones', variables('databaseDNSZoneName'))]"
-                },
-                "highAvailability": {
-                    "mode": "Disabled"
-                },
-                "maintenanceWindow": {
-                    "customWindow": "Disabled",
-                    "dayOfWeek": 0,
-                    "startHour": 0,
-                    "startMinute": 0
-                }
-            }
         }
+
     ]
 }
