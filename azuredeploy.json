@@ -51,7 +51,7 @@
         }
     },
     "variables": {
-        "databaseDNSZoneName": "ese-dns-zone",
+        "databaseDNSZoneName": "ese-database.private.postgres.database.azure.com",
         "imagePublisher": "Canonical",
         "imageOffer": "UbuntuServer",
         "ubuntuOSVersion": "18.04-LTS",
@@ -88,7 +88,6 @@
     },
     "resources": [
 
-
         {
             "type": "Microsoft.Network/privateDnsZones",
             "apiVersion": "2018-09-01",
@@ -102,6 +101,44 @@
                 "numberOfVirtualNetworkLinks": 1,
                 "numberOfVirtualNetworkLinksWithRegistration": 0,
                 "provisioningState": "Succeeded"
+            }
+        },
+
+        {
+            "type": "Microsoft.Network/privateDnsZones/A",
+            "apiVersion": "2018-09-01",
+            "name": "[concat(variables('databaseDNSZoneName'), '/e78582fbfdf3')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/privateDnsZones', variables('databaseDNSZoneName'))]"
+            ],
+            "properties": {
+                "ttl": 30,
+                "aRecords": [
+                    {
+                        "ipv4Address": "10.0.1.4"
+                    }
+                ]
+            }
+        },
+
+        {
+            "type": "Microsoft.Network/privateDnsZones/SOA",
+            "apiVersion": "2018-09-01",
+            "name": "[concat(variables('databaseDNSZoneName'), '/@')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/privateDnsZones', variables('databaseDNSZoneName'))]"
+            ],
+            "properties": {
+                "ttl": 3600,
+                "soaRecord": {
+                    "email": "azureprivatedns-host.microsoft.com",
+                    "expireTime": 2419200,
+                    "host": "azureprivatedns.net",
+                    "minimumTtl": 10,
+                    "refreshTime": 3600,
+                    "retryTime": 300,
+                    "serialNumber": 1
+                }
             }
         },
 
@@ -175,7 +212,28 @@
                     {
                         "name": "[variables('databaseSubnetName')]",
                         "properties": {
-                            "addressPrefix": "[variables('databaseSubnetPrefix')]"
+                            "addressPrefix": "[variables('databaseSubnetPrefix')]",
+                            "serviceEndpoints": [
+                                {
+                                    "service": "Microsoft.Storage",
+                                    "locations": [
+                                        "eastus",
+                                        "westus"
+                                    ]
+                                }
+                            ],
+                            "delegations": [
+                                {
+                                    "name": "dlg-Microsoft.DBforPostgreSQL-flexibleServers",
+                                    "id": "[concat(resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('databaseSubnetName')), '/delegations/dlg-Microsoft.DBforPostgreSQL-flexibleServers')]",
+                                    "properties": {
+                                        "serviceName": "Microsoft.DBforPostgreSQL/flexibleServers"
+                                    },
+                                    "type": "Microsoft.Network/virtualNetworks/subnets/delegations"
+                                }
+                            ],
+                            "privateEndpointNetworkPolicies": "Disabled",
+                            "privateLinkServiceNetworkPolicies": "Enabled"
                         }
                     }
                 ]
@@ -411,6 +469,64 @@
             "properties": {
                 "platformUpdateDomainCount": 2,
                 "platformFaultDomainCount": 2
+            }
+        },
+
+        {
+            "type": "Microsoft.DBforPostgreSQL/flexibleServers",
+            "apiVersion": "2022-01-20-preview",
+            "name": "[variables('databaseName')]",
+            "location": "East US",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('databaseSubnetName'))]",
+                "[resourceId('Microsoft.Network/privateDnsZones', variables('databaseDNSZoneName'))]"
+            ],
+            "sku": {
+                "name": "Standard_B1ms",
+                "tier": "Burstable"
+            },
+            "properties": {
+                "version": "14",
+                "administratorLogin": "ryan",
+                "administratorLoginPassword": "EpK@YAFFiCXjm9k*tR6@i-gR",
+                "availabilityZone": "2",
+                "storage": {
+                    "storageSizeGB": 32
+                },
+                "backup": {
+                    "backupRetentionDays": 7,
+                    "geoRedundantBackup": "Disabled"
+                },
+                "network": {
+                    "delegatedSubnetResourceId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('databaseSubnetName'))]",
+                    "privateDnsZoneArmResourceId": "[resourceId('Microsoft.Network/privateDnsZones', variables('databaseDNSZoneName'))]"
+                },
+                "highAvailability": {
+                    "mode": "Disabled"
+                },
+                "maintenanceWindow": {
+                    "customWindow": "Disabled",
+                    "dayOfWeek": 0,
+                    "startHour": 0,
+                    "startMinute": 0
+                }
+            }
+        },
+
+        {
+            "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+            "apiVersion": "2018-09-01",
+            "name": "[concat(variables('databaseDNSZoneName'), '/ey5z4ucrdz2a2')]",
+            "location": "global",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/privateDnsZones', variables('databaseDNSZoneName'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]"
+            ],
+            "properties": {
+                "registrationEnabled": false,
+                "virtualNetwork": {
+                    "id": "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]"
+                }
             }
         }
 
