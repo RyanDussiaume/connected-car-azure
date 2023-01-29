@@ -6,7 +6,7 @@ DATABASE_SERVER=$1
 DATABASE_USER=$2
 DATABASE_PASSWORD=$3
 
-IF [ $VM_INDEX -eq 0]
+IF [ $VM_INDEX == '0' ]
 THEN
     sudo apt update
     sudo apt install postgresql-client
