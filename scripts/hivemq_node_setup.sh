@@ -1,6 +1,21 @@
 HIVEMQ_VERSION=$1
 STORAGE_ACCESS_KEY=$2
 STORAGE_CONTAINER_NAME=$3
+VM_INDEX=$4
+DATABASE_SERVER=$1
+DATABASE_USER=$2
+DATABASE_PASSWORD=$3
+
+IF [ $VM_INDEX -eq 0]
+THEN
+    sudo apt update
+    sudo apt install postgresql-client
+    export PGPASSWORD="${DATABASE_PASSWORD}"
+    sudo wget --content-disposition https://raw.githubusercontent.com/RyanDussiaume/connected-car-azure/main/scripts/postgresql_create.sql
+    sudo wget --content-disposition https://raw.githubusercontent.com/RyanDussiaume/connected-car-azure/main/scripts/permissions.sql
+    psql -h $DATABASE_SERVER -p 5432 -d postgres -U $DATABASE_USER -f postgresql_create.sql
+    psql -h $DATABASE_SERVER -p 5432 -d postgres -U $DATABASE_USER -f permissions.sql
+FI
 
 EXTENSION_PROPERTIES_PATH="/opt/hivemq/extensions/hivemq-azure-cluster-discovery-extension/azDiscovery.properties"
 HIVEMQ_DOWNLOAD_LINK="https://www.hivemq.com/releases/hivemq-${HIVEMQ_VERSION}.zip"

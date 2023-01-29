@@ -63,6 +63,7 @@
         "subnetName": "hivemq-cluster-subnet",
         "subnetPrefix": "10.0.0.0/24",
         "databaseName": "[concat('ese-database-', toLower(uniqueString(resourceGroup().id)) )]",
+        "databaseServer": "[concat('ese-database-', toLower(uniqueString(resourceGroup().id)), '.postgres.database.azure.com' )]",
         "databaseSubnetName": "ese-database-subnet",
         "databaseSubnetPrefix": "10.0.1.0/24",
         "virtualNetworkName": "hivemq-cluster-vnet",
@@ -84,7 +85,8 @@
         },
         "storageAccountName": "[toLower(uniqueString(resourceGroup().id) )]",
         "containerName": "[concat('hivemq-cluster-container-', uniqueString( resourceGroup().id, deployment().name ))]",
-        "setupScriptLink": "https://raw.githubusercontent.com/RyanDussiaume/connected-car-azure/main/scripts/hivemq_node_setup.sh"
+        "setupScriptLink": "https://raw.githubusercontent.com/RyanDussiaume/connected-car-azure/main/scripts/hivemq_node_setup.sh",
+        "databaseSetupScriptLink": "https://raw.githubusercontent.com/RyanDussiaume/connected-car-azure/main/scripts/initialize_database.sh"
     },
     "resources": [
 
@@ -295,8 +297,9 @@
             "dependsOn": [
                 "nicLoop",
                 "[variables('storageAccountName')]",
-                "[variables('asName')]"
-            ],
+                "[variables('asName')]",
+                "[resourceId('Microsoft.DBforPostgreSQL/flexibleServers', variables('databaseName'))]"
+             ],
             "properties": {
                 "availabilitySet": {
                     "id": "[resourceId('Microsoft.Compute/availabilitySets',variables('asName'))]"
@@ -360,7 +363,7 @@
                             ]
                         },
                         "protectedSettings": {
-                            "commandToExecute": "[format('sh hivemq_node_setup.sh {0} {1} {2}', parameters('hivemqVersion'), concat('\"' ,'DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value,';EndpointSuffix=core.windows.net', '\"'), variables('containerName'))]"
+                            "commandToExecute": "[format('sh hivemq_node_setup.sh {0} {1} {2} {3} {4} {5} {6}', parameters('hivemqVersion'), concat('\"' ,'DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value,';EndpointSuffix=core.windows.net', '\"'), variables('containerName'), copyIndex(), variables('databaseServer'), parameters('adminUsername'), parameters('adminPasswordOrSSHKey'))]"
                         }
 
                     }
