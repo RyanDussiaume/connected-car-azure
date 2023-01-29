@@ -6,8 +6,8 @@ DATABASE_SERVER=$1
 DATABASE_USER=$2
 DATABASE_PASSWORD=$3
 
-sudo apt update
-sudo apt install postgresql-client
+sudo apt update -y
+sudo apt install postgresql-client -y
 export PGPASSWORD="${DATABASE_PASSWORD}"
 sudo wget --content-disposition https://raw.githubusercontent.com/RyanDussiaume/connected-car-azure/main/scripts/postgresql_create.sql
 sudo wget --content-disposition https://raw.githubusercontent.com/RyanDussiaume/connected-car-azure/main/scripts/permissions.sql
