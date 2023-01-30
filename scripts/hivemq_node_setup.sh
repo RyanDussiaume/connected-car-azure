@@ -90,6 +90,66 @@ file-expiration=360
 # Interval in seconds in which the Blob will be updated. Must be less than file-expiration. (default: 180)
 update-interval=180" | sudo tee $EXTENSION_PROPERTIES_PATH
 
+# Setup Security Extension
 
+cd /opt/hivemq/extensions/hivemq-enterprise-security-extension/drivers/jdbc
+sudo wget --content-disposition https://github.com/RyanDussiaume/connected-car-azure/raw/main/drivers/postgresql-42.5.1.jar
+
+echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>
+<enterprise-security-extension
+        xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+        xsi:noNamespaceSchemaLocation=\"enterprise-security-extension.xsd\"
+        version=\"1\">
+    <realms>
+        <!-- a postgresql db-->
+        <sql-realm>
+            <name>postgres-backend</name>
+            <enabled>true</enabled>
+            <configuration>
+                <db-type>POSTGRES</db-type>
+                <db-name>postgres</db-name>
+                <db-host>${DATABASE_SERVER}</db-host>
+                <db-port>5432</db-port>
+                <db-username>${DATABASE_USER}</db-username>
+                <db-password>${DATABASE_PASSWORD}</db-password>
+            </configuration>
+        </sql-realm>
+
+    </realms>
+
+    <pipelines>
+        <!-- secure access to the mqtt broker -->
+        <listener-pipeline listener=\"ALL\">
+            <authentication-preprocessors>
+                <plain-preprocessor>
+                    <transformations>
+                        <transformation encoding=\"UTF8\">
+                            <from>mqtt-clientid</from>
+                            <to>authentication-key</to>
+                        </transformation>
+                        <transformation>
+                            <from>mqtt-password</from>
+                            <to>authentication-byte-secret</to>
+                        </transformation>
+                    </transformations>
+                </plain-preprocessor>
+            </authentication-preprocessors>
+            <!-- authenticate over a sql db -->
+            <sql-authentication-manager>
+                <realm>postgres-backend</realm>
+            </sql-authentication-manager>
+            <!-- authorize over a sql db -->
+            <sql-authorization-manager>
+                <realm>postgres-backend</realm>
+                <use-authorization-key>false</use-authorization-key>
+                <use-authorization-role-key>true</use-authorization-role-key>
+            </sql-authorization-manager>
+        </listener-pipeline>
+    </pipelines>
+</enterprise-security-extension>" | sudo tee /opt/hivemq/extensions/hivemq-enterprise-security-extension/conf/enterprise-security-extension.xml
+cd /opt/hivemq/extensions/hivemq-enterprise-security-extension
+sudo rm DISABLED
+
+# Start HiveMQ
 sudo systemctl enable hivemq
 sudo systemctl start hivemq
