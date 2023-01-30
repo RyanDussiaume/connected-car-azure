@@ -149,6 +149,8 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>
 </enterprise-security-extension>" | sudo tee /opt/hivemq/extensions/hivemq-enterprise-security-extension/conf/enterprise-security-extension.xml
 cd /opt/hivemq/extensions/hivemq-enterprise-security-extension
 sudo rm DISABLED
+cd /opt/hivemq/extensions/hivemq-allow-all-extension
+sudo touch DISABLED
 
 # Start HiveMQ
 sudo systemctl enable hivemq
