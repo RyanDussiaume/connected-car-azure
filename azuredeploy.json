@@ -66,6 +66,7 @@
         "databaseServer": "[concat('ese-database-', toLower(uniqueString(resourceGroup().id)), '.postgres.database.azure.com' )]",
         "databaseSubnetName": "ese-database-subnet",
         "databaseSubnetPrefix": "10.0.1.0/24",
+        "databasePassword": "EpK@YAFFiCXjm9k*tR6@i-gR",
         "virtualNetworkName": "hivemq-cluster-vnet",
         "backendPoolName": "hivemq-node",
         "frontendName": "LoadBalancerFrontEnd",
@@ -363,7 +364,7 @@
                             ]
                         },
                         "protectedSettings": {
-                            "commandToExecute": "[format('sh hivemq_node_setup.sh {0} {1} {2} {3} {4} {5} {6}', parameters('hivemqVersion'), concat('\"' ,'DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value,';EndpointSuffix=core.windows.net', '\"'), variables('containerName'), copyIndex(), variables('databaseServer'), parameters('adminUsername'), parameters('adminPasswordOrSSHKey'))]"
+                            "commandToExecute": "[format('sh hivemq_node_setup.sh {0} {1} {2} {3} {4} {5} {6}', parameters('hivemqVersion'), concat('\"' ,'DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value,';EndpointSuffix=core.windows.net', '\"'), variables('containerName'), copyIndex(), variables('databaseServer'), parameters('adminUsername'), variables('databasePassword'))]"
                         }
 
                     }
@@ -498,7 +499,7 @@
             "properties": {
                 "version": "14",
                 "administratorLogin": "ryan",
-                "administratorLoginPassword": "EpK@YAFFiCXjm9k*tR6@i-gR",
+                "administratorLoginPassword": "[variables('databasePassword')]",
                 "availabilityZone": "2",
                 "storage": {
                     "storageSizeGB": 32
