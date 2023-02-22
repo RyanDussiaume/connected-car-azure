@@ -342,34 +342,7 @@
                         }
                     ]
                 }
-            },
-            "resources": [
-                {
-                    "type": "extensions",
-                    "apiVersion": "2019-12-01",
-                    "name": "[concat('hivemq-node-setup-extension-', copyIndex())]",
-                    "location": "[resourceGroup().location]",
-                    "dependsOn": [
-                        "[variables('storageAccountName')]",
-                        "[resourceId('Microsoft.Compute/virtualMachines', concat(variables('vmName'), copyIndex()))]"
-                    ],
-                    "properties": {
-                        "publisher": "Microsoft.Azure.Extensions",
-                        "type": "CustomScript",
-                        "typeHandlerVersion": "2.0",
-                        "autoUpgradeMinorVersion": true,
-                        "settings": {
-                            "fileUris": [
-                                "[variables('setupScriptLink')]"
-                            ]
-                        },
-                        "protectedSettings": {
-                            "commandToExecute": "[format('sh hivemq_node_setup.sh {0} {1} {2} {3} {4} {5} {6}', parameters('hivemqVersion'), concat('\"' ,'DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value,';EndpointSuffix=core.windows.net', '\"'), variables('containerName'), copyIndex(), variables('databaseServer'), parameters('adminUsername'), variables('databasePassword'))]"
-                        }
-
-                    }
-                }
-            ]
+            }
         },
 
 
