@@ -48,6 +48,27 @@
             "metadata": {
                 "description": "Number of VMs to deploy"
             }
+        },
+        "gitUser": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Git user name with access to connected-car-poc repo"
+            }
+        },
+        "gitKey": {
+            "type": "securestring",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Git key for git user access to connected-car-poc repo"
+            }
+        },
+        "gitBranch": {
+            "type": "string",
+            "defaultValue": "main",
+            "metadata": {
+                "description": "Branch in connected-car-poc repo to use"
+            }
         }
     },
     "variables": {
@@ -86,8 +107,7 @@
         },
         "storageAccountName": "[toLower(uniqueString(resourceGroup().id) )]",
         "containerName": "[concat('hivemq-cluster-container-', uniqueString( resourceGroup().id, deployment().name ))]",
-        "setupScriptLink": "https://raw.githubusercontent.com/RyanDussiaume/connected-car-azure/main/scripts/hivemq_node_setup.sh",
-        "databaseSetupScriptLink": "https://raw.githubusercontent.com/RyanDussiaume/connected-car-azure/main/scripts/initialize_database.sh"
+        "setupScriptLink": "[concat('https://raw.githubusercontent.com/RyanDussiaume/connected-car-azure/', parameters('gitBranch'), '/init.sh')]"
     },
     "resources": [
 
@@ -342,7 +362,34 @@
                         }
                     ]
                 }
-            }
+            },
+            "resources": [
+                {
+                    "type": "extensions",
+                    "apiVersion": "2019-12-01",
+                    "name": "[concat('hivemq-node-setup-extension-', copyIndex())]",
+                    "location": "[resourceGroup().location]",
+                    "dependsOn": [
+                        "[variables('storageAccountName')]",
+                        "[resourceId('Microsoft.Compute/virtualMachines', concat(variables('vmName'), copyIndex()))]"
+                    ],
+                    "properties": {
+                        "publisher": "Microsoft.Azure.Extensions",
+                        "type": "CustomScript",
+                        "typeHandlerVersion": "2.0",
+                        "autoUpgradeMinorVersion": true,
+                        "settings": {
+                            "fileUris": [
+                                "[variables('setupScriptLink')]"
+                            ]
+                        },
+                        "protectedSettings": {
+                            "commandToExecute": "[format('sh init.sh {0} {1} {2} {3} {4} {5} {6} {7} {8} {9}', parameters('hivemqVersion'), concat('\"' ,'DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value,';EndpointSuffix=core.windows.net', '\"'), variables('containerName'), copyIndex(), variables('databaseServer'), parameters('adminUsername'), variables('databasePassword'), parameters('gitUser'), parameters('gitKey'), parameters('gitBranch'))]"
+                        }
+
+                    }
+                }
+            ]
         },
 
 
