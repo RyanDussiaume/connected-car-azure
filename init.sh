@@ -12,6 +12,7 @@ GIT_BRANCH=$10
 sudo apt update -y
 sudo apt install git -y
 
+cd ~
 git clone https://${GIT_USER}:${GIT_PRIVATE_KEY}@github.com/RyanDussiaume/connected-car-poc.git
 
 cd connected-car-poc
