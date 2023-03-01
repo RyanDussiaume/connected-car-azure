@@ -12,10 +12,10 @@ GIT_BRANCH=$10
 sudo apt update -y
 sudo apt install git -y
 
-sudo cd /home/${DATABASE_USER}
+cd /home/${DATABASE_USER}
 sudo git clone https://${GIT_USER}:${GIT_PRIVATE_KEY}@github.com/RyanDussiaume/connected-car-poc.git
 
-sudo cd connected-car-poc
+cd connected-car-poc
 sudo git checkout $GIT_BRANCH
 
 sudo sh ./hivemq_node_setup.sh $1 $2 $3 $4 $5 $6 $7
