@@ -518,7 +518,7 @@
             },
             "properties": {
                 "version": "14",
-                "administratorLogin": "ryan",
+                "administratorLogin": "[parameters('adminUsername')]",
                 "administratorLoginPassword": "[variables('databasePassword')]",
                 "availabilityZone": "2",
                 "storage": {
