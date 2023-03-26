@@ -249,8 +249,7 @@
                     {
                         "service": "Microsoft.Storage",
                         "locations": [
-                            "eastus",
-                            "westus"
+                            "[resourceGroup().location]"
                         ]
                     }
                 ],
