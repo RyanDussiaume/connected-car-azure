@@ -433,7 +433,7 @@
                             "idleTimeoutInMinutes": 5,
                             "protocol": "Tcp",
                             "enableTcpReset": false,
-                            "loadDistribution": "Default",
+                            "loadDistribution": "SourceIPProtocol",
                             "backendAddressPool": {
                                 "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', variables('loadBalancersName'), variables('backendPoolName'))]"
                             },
@@ -454,7 +454,7 @@
                             "idleTimeoutInMinutes": 5,
                             "protocol": "Tcp",
                             "enableTcpReset": false,
-                            "loadDistribution": "SourceIPProtocol",
+                            "loadDistribution": "Default",
                             "backendAddressPool": {
                                 "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', variables('loadBalancersName'), variables('backendPoolName'))]"
                             },
