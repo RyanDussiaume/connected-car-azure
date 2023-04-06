@@ -2,7 +2,7 @@
 
 This template deploys a n-Node HiveMQ cluster to Azure.
 
-[![Deploy To Azure](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.svg?sanitize=true)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2F%2FRyanDussiaume%2Fconnected-car-azure%2Ffix-issues%2Fazuredeploy.json)
+[![Deploy To Azure](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.svg?sanitize=true)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2F%2FRyanDussiaume%2Fconnected-car-azure%2Fmain%2Fazuredeploy.json)
 
 The following resources will be deployed bis this template:
 - n Virtual Machines with HiveMQ and the HiveMQ Azure Cluster Discovery Extension installed
